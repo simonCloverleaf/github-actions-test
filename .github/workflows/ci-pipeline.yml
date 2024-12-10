@@ -18,13 +18,11 @@ jobs:
       with:
         script: |
           console.log(github.rest.pulls)
-          const test = await github.rest.pulls.get({
+          const { data: reviews } = await github.rest.pulls.listReviews({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: context.payload.pull_request.number,
           });
-          console.log(test);
-          const reviews = { data }
           console.log(reviews);
           const approvals = reviews.filter(review => review.state === 'APPROVED').length;
           return approvals;
