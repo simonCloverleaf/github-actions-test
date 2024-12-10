@@ -16,7 +16,7 @@ jobs:
       with:
         script: |
           console.log(github.rest.pulls)
-          const test = github.rest.pulls.get({
+          const test = await github.rest.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: context.payload.pull_request.number,
@@ -38,4 +38,4 @@ jobs:
         subject: Github Actions job result
         to: simon@cloverleaf.ai
         from: Github Actions
-        body: Build job of ${{github.repository}} completed successfully!
+        body: Build job of ${{github.repository}} completed successfully by ${{github.actor}}!
