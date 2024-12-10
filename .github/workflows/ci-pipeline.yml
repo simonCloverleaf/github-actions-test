@@ -1,0 +1,37 @@
+name: Send Email on PR Merge with No Approvals
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  send_email:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check approvals
+      id: check_approvals
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: reviews } = await github.pulls.listReviews({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number,
+          });
+          const approvals = reviews.filter(review => review.state === 'APPROVED').length;
+          return approvals;
+
+    - name: Send email
+      if: steps.check_approvals.outputs.result == '0'
+      uses: dawidd6/action-send-mail@v4
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{secrets.MAIL_USERNAME}}
+        password: ${{secrets.MAIL_PASSWORD}}
+        subject: Github Actions job result
+        to: simon@cloverleaf.ai
+        from: Github Actions
+        body: Build job of ${{github.repository}} completed successfully!
