@@ -12,14 +12,17 @@ jobs:
     steps:
     - name: Check approvals
       id: check_approvals
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
-          const { data: reviews } = await github.pulls.get({
+          console.log(github)
+          const test = github.pulls.get({
             owner: context.repo.owner,
             repo: context.repo.repo,
             pull_number: context.payload.pull_request.number,
           });
+          console.log(test);
+          const reviews = { data }
           console.log(reviews);
           const approvals = reviews.filter(review => review.state === 'APPROVED').length;
           return approvals;
